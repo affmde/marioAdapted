@@ -12,6 +12,9 @@ class Level3 extends Phaser.Scene{
         this.load.image('heart', 'assets/red-heart.png');
         this.load.image('ring', 'assets/ring.png');
         this.load.image('box', 'assets/box.png');
+        this.load.image('ArrowsController', 'assets/controls.png')
+        this.load.image('ControlA', 'assets/ControlA.png');
+        this.load.image('squareFake', 'assets/squareFakeControl.png')
     }
 
     create(){
@@ -32,6 +35,12 @@ class Level3 extends Phaser.Scene{
         this.player.setCollideWorldBounds(true);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
+        arrows = this.add.image(120, 480, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
+        controlA = this.add.image(650,480, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
+        squareLeft = this.add.image(50, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareRight = this.add.image(190, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareUp = this.add.image(120, 410, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareDown = this.add.image(120, 550, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         this.smallPlatforms= this.physics.add.staticGroup();
         this.boxRings= this.physics.add.group(({
             key: 'ring',
@@ -132,7 +141,7 @@ class Level3 extends Phaser.Scene{
     update(){
         this.physics.world.collide(this.player, this.platforms);
         this.player.anims.play('golem_idle', true)
-        if(this.cursors.left.isDown){
+        /*if(this.cursors.left.isDown){
             this.player.setVelocityX(-160)
         }else if(this.cursors.right.isDown){
             this.player.setVelocityX(160)
@@ -144,11 +153,48 @@ class Level3 extends Phaser.Scene{
             this.player.setVelocityY(-380)
         }else if(this.cursors.down.isDown){
             this.player.setVelocityY(200)
-        }
+        }*/
 
         if(this.player.y===568){
             this.checkGameOver()
         }
+
+        //Mobile Controls
+        squareLeft.on('pointerdown', ()=>{
+            this.player.setVelocityX(-160)
+            squareLeft.setAlpha(0.03)
+        })
+        squareLeft.on('pointerup', ()=>{
+            this.player.setVelocityX(0);
+            squareLeft.setAlpha(0.01)
+        })
+        squareLeft.on('pointerout', ()=>{
+            this.player.setVelocityX(0);
+            squareLeft.setAlpha(0.01)
+        })
+        squareRight.on('pointerdown', ()=>{
+            this.player.setVelocityX(160)
+            squareRight.setAlpha(0.03)
+        })
+        squareRight.on('pointerout', ()=>{
+            this.player.setVelocityX(0)
+            squareRight.setAlpha(0.01)
+        })
+        squareRight.on('pointerup', ()=>{
+            this.player.setVelocityX(0)
+            squareRight.setAlpha(0.01)
+        })
+        controlA.on('pointerdown', ()=>{
+            if(this.player.body.touching.down)
+            this.player.setVelocityY(-380)
+            controlA.setScale(0.6)
+        })
+        controlA.on('pointerup', ()=>{
+            controlA.setScale(0.8)
+        })
+        controlA.on('pointerout', ()=>{
+            controlA.setScale(0.8)
+        })
 
         //Update texts
         this.scoreText.setText(`Your score: ${gameStats.score}`)

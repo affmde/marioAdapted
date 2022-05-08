@@ -46,12 +46,12 @@ class GameScene extends Phaser.Scene{
         this.rings= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup()
         this.platforms= this.physics.add.staticGroup()
-        arrows = this.add.image(120, 500, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
-        controlA = this.add.image(650,500, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
-        squareLeft = this.add.image(50, 500, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareRight = this.add.image(190, 500, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareUp = this.add.image(120, 430, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareDown = this.add.image(120, 570, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        arrows = this.add.image(120, 480, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
+        controlA = this.add.image(650,480, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
+        squareLeft = this.add.image(50, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareRight = this.add.image(190, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareUp = this.add.image(120, 410, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareDown = this.add.image(120, 550, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         //Create Live Hearts
         for(let i = 0; i < gameStats.lives; i++){
             const heart = this.add.image(20 + i*30, 20, 'heart');
@@ -131,9 +131,17 @@ class GameScene extends Phaser.Scene{
             this.player.setVelocityX(0);
             squareLeft.setAlpha(0.01)
         })
+        squareLeft.on('pointerout', ()=>{
+            this.player.setVelocityX(0);
+            squareLeft.setAlpha(0.01)
+        })
         squareRight.on('pointerdown', ()=>{
             this.player.setVelocityX(160)
             squareRight.setAlpha(0.03)
+        })
+        squareRight.on('pointerout', ()=>{
+            this.player.setVelocityX(0)
+            squareRight.setAlpha(0.01)
         })
         squareRight.on('pointerup', ()=>{
             this.player.setVelocityX(0)
@@ -145,6 +153,9 @@ class GameScene extends Phaser.Scene{
             controlA.setScale(0.6)
         })
         controlA.on('pointerup', ()=>{
+            controlA.setScale(0.8)
+        })
+        controlA.on('pointerout', ()=>{
             controlA.setScale(0.8)
         })
         

@@ -15,6 +15,9 @@ class Level4 extends Phaser.Scene{
         this.load.image('ring', 'assets/ring.png');
         this.load.atlas('mashroom', 'assets/mashroom.png', 'assets/mashroom_atlas.json')
         this.load.animation('mashroom_anim', 'assets/mashroom_anim.json');
+        this.load.image('ArrowsController', 'assets/controls.png')
+        this.load.image('ControlA', 'assets/ControlA.png');
+        this.load.image('squareFake', 'assets/squareFakeControl.png')
     }
 
     create(){
@@ -37,6 +40,12 @@ class Level4 extends Phaser.Scene{
         this.rings= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup();
         mashrooms4= this.physics.add.group();
+        arrows = this.add.image(120, 480, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
+        controlA = this.add.image(650,480, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
+        squareLeft = this.add.image(50, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareRight = this.add.image(190, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareUp = this.add.image(120, 410, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareDown = this.add.image(120, 550, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         
         //Create Live Hearts
         for(let i = 0; i < gameStats.lives; i++){
@@ -119,7 +128,7 @@ class Level4 extends Phaser.Scene{
     update(){
         this.physics.world.collide(this.player, this.platforms);
         this.player.anims.play('golem_idle', true)
-        if(this.cursors.left.isDown){
+        /*if(this.cursors.left.isDown){
             this.player.setVelocityX(-160)
         }else if(this.cursors.right.isDown){
             this.player.setVelocityX(160)
@@ -131,7 +140,7 @@ class Level4 extends Phaser.Scene{
             this.player.setVelocityY(-380)
         }else if(this.cursors.down.isDown){
             this.player.setVelocityY(200)
-        }
+        }*/
 
         if(this.player.y===568){
             this.checkGameOver()
@@ -142,6 +151,43 @@ class Level4 extends Phaser.Scene{
         }else if(movablePlatform.x>2700){
             movablePlatform.body.setVelocityX(-100)
         }
+
+        //Mobile Controls
+        squareLeft.on('pointerdown', ()=>{
+            this.player.setVelocityX(-160)
+            squareLeft.setAlpha(0.03)
+        })
+        squareLeft.on('pointerup', ()=>{
+            this.player.setVelocityX(0);
+            squareLeft.setAlpha(0.01)
+        })
+        squareLeft.on('pointerout', ()=>{
+            this.player.setVelocityX(0);
+            squareLeft.setAlpha(0.01)
+        })
+        squareRight.on('pointerdown', ()=>{
+            this.player.setVelocityX(160)
+            squareRight.setAlpha(0.03)
+        })
+        squareRight.on('pointerout', ()=>{
+            this.player.setVelocityX(0)
+            squareRight.setAlpha(0.01)
+        })
+        squareRight.on('pointerup', ()=>{
+            this.player.setVelocityX(0)
+            squareRight.setAlpha(0.01)
+        })
+        controlA.on('pointerdown', ()=>{
+            if(this.player.body.touching.down)
+            this.player.setVelocityY(-380)
+            controlA.setScale(0.6)
+        })
+        controlA.on('pointerup', ()=>{
+            controlA.setScale(0.8)
+        })
+        controlA.on('pointerout', ()=>{
+            controlA.setScale(0.8)
+        })
 
         //Update texts
         this.scoreText.setText(`Your score: ${gameStats.score}`)
