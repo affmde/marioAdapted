@@ -140,7 +140,7 @@ class Level3 extends Phaser.Scene{
 
     update(){
         this.physics.world.collide(this.player, this.platforms);
-        this.player.anims.play('golem_idle', true)
+        this.checkAnimation()
         /*if(this.cursors.left.isDown){
             this.player.setVelocityX(-160)
         }else if(this.cursors.right.isDown){
@@ -159,34 +159,43 @@ class Level3 extends Phaser.Scene{
             this.checkGameOver()
         }
 
-        //Mobile Controls
-        squareLeft.on('pointerdown', ()=>{
-            this.player.setVelocityX(-160)
-            squareLeft.setAlpha(0.03)
+       //Mobile Controls
+       squareLeft.on('pointerdown', ()=>{
+        this.player.setVelocityX(-160)
+        squareLeft.setAlpha(0.03)
+        this.player.flipX=true;
+        animation='walk'
         })
         squareLeft.on('pointerup', ()=>{
             this.player.setVelocityX(0);
             squareLeft.setAlpha(0.01)
+            animation='idle'
         })
         squareLeft.on('pointerout', ()=>{
             this.player.setVelocityX(0);
             squareLeft.setAlpha(0.01)
+            animation='idle'
         })
         squareRight.on('pointerdown', ()=>{
             this.player.setVelocityX(160)
             squareRight.setAlpha(0.03)
+            animation='walk'
+            this.player.flipX=false
         })
         squareRight.on('pointerout', ()=>{
             this.player.setVelocityX(0)
             squareRight.setAlpha(0.01)
+            animation='idle'
         })
         squareRight.on('pointerup', ()=>{
             this.player.setVelocityX(0)
             squareRight.setAlpha(0.01)
+            animation='idle'
         })
         controlA.on('pointerdown', ()=>{
-            if(this.player.body.touching.down)
-            this.player.setVelocityY(-380)
+            if(this.player.body.touching.down){
+                this.player.setVelocityY(-380)
+            }
             controlA.setScale(0.6)
         })
         controlA.on('pointerup', ()=>{
@@ -211,6 +220,14 @@ class Level3 extends Phaser.Scene{
         }else{
             gameStats.lives--;
             this.scene.start()
+        }
+    }
+
+    checkAnimation(){
+        if(animation==='idle'){
+            this.player.anims.play('golem_idle', true)
+        }else if(animation==='walk'){
+            this.player.anims.play('golem_walk', true)
         }
     }
 
