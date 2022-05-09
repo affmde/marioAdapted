@@ -36,6 +36,8 @@ class Level2 extends Phaser.Scene{
         this.door.body.allowGravity = false;
         this.player= this.physics.add.sprite(20,h*0.2,'golem');
         this.player.setCollideWorldBounds(true);
+        this.player.setSize(35, 35);
+        this.player.setOffset(15, 28);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
         this.boxRings= this.physics.add.group(({

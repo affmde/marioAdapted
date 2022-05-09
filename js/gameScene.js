@@ -43,6 +43,8 @@ class GameScene extends Phaser.Scene{
         this.door.body.allowGravity = false;
         this.player= this.physics.add.sprite(20,h*0.20,'golem');
         this.player.setCollideWorldBounds(true);
+        this.player.setSize(35, 35);
+        this.player.setOffset(15, 28);
         this.rings= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup()
         this.platforms= this.physics.add.staticGroup()

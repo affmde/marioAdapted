@@ -33,6 +33,8 @@ class Level3 extends Phaser.Scene{
         this.door.body.allowGravity = false;
         this.player= this.physics.add.sprite(20,h*0.25,'golem');
         this.player.setCollideWorldBounds(true);
+        this.player.setSize(35, 35);
+        this.player.setOffset(15, 28);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
         arrows = this.add.image(120, h*0.8, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);

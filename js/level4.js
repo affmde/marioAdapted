@@ -18,6 +18,7 @@ class Level4 extends Phaser.Scene{
         this.load.image('ArrowsController', 'assets/controls.png')
         this.load.image('ControlA', 'assets/ControlA.png');
         this.load.image('squareFake', 'assets/squareFakeControl.png')
+        this.load.image('box', 'assets/box.png');
     }
 
     create(){
@@ -36,6 +37,8 @@ class Level4 extends Phaser.Scene{
         this.door.body.allowGravity = false;
         this.player= this.physics.add.sprite(20,h*0.2,'golem');
         this.player.setCollideWorldBounds(true);
+        this.player.setSize(35, 35);
+        this.player.setOffset(15, 28);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup();
@@ -46,6 +49,31 @@ class Level4 extends Phaser.Scene{
         squareRight = this.add.image(190, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         squareUp = this.add.image(120, h*0.8-70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         squareDown = this.add.image(120, h*0.8+70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        this.boxRings= this.physics.add.group(({
+            key: 'ring',
+            frameQuantity: 12,
+            maxSize: 1000,
+            active: false,
+            visible: false,
+            enable: false,
+            bounceX: 0.5,
+            bounceY: 0.5,
+            dragX: 30,
+            dragY: 0
+        }));
+        this.boxHearts= this.physics.add.group(({
+            key: 'heart',
+            frameQuantity: 12,
+            maxSize: 1000,
+            active: false,
+            visible: false,
+            enable: false,
+            bounceX: 0.5,
+            bounceY: 0.5,
+            dragX: 30,
+            dragY: 0
+        }));
+        this.boxes= this.physics.add.staticGroup();
         
         //Create Live Hearts
         for(let i = 0; i < gameStats.lives; i++){
@@ -57,6 +85,7 @@ class Level4 extends Phaser.Scene{
             this.platforms.create(platform.x, platform.y, 'platform');
             this.createRings(platform, 8)
             this.createEnemies(platform, platform.x+100, 2000)
+            this.createBox(platform)
         })
 
         smallPlatforms4.forEach(platform=>{
@@ -104,8 +133,26 @@ class Level4 extends Phaser.Scene{
                 console.log('hit to die')
                 this.checkGameOver()
             }
-            
         })
+        this.physics.add.collider(this.player, this.boxes, (player, box)=>{
+            if(box.body.touching.down && player.body.touching.up){
+                const rand= Math.random();
+                if(box.name==="Destroyable"){
+                    if(rand>0.7){
+                        this.createBoxHeart(player, box)
+                    }
+                    else if(rand<0.5){
+                        this.createBoxRings(player, box)
+                    }else{
+                        return
+                    }
+                }else{
+                    return
+                }
+            }
+        })
+        this.physics.add.collider(this.platforms, this.boxRings);
+        this.physics.add.collider(this.boxes, this.boxRings)
         //Overlap
         this.physics.add.overlap(this.player, this.door, ()=>{
             gameStats.score++;
@@ -117,6 +164,14 @@ class Level4 extends Phaser.Scene{
         this.ringsOverlap= this.physics.add.overlap(this.player, this.rings, (player, ring)=>{
             gameStats.score +=10
             ring.destroy();
+        })
+        this.boxRingsOverlap= this.physics.add.overlap(this.player, this.boxRings, (player, ring)=>{
+            gameStats.score +=10
+            ring.destroy();
+        })
+        this.boxHeartsOverlap= this.physics.add.overlap(this.player, this.boxHearts, (player, heart)=>{
+            gameStats.lives++
+            heart.destroy();
         })
 
         //Texts
@@ -241,6 +296,41 @@ class Level4 extends Phaser.Scene{
                 ring.setScale(0.5)
             }
         }
+    }
+
+    createBox(platform){
+        const rand= Math.random();
+        if(rand < 0.5){
+            const numOfBoxes = Math.floor(Math.random()*5);
+            for(let i= 0; i<numOfBoxes; i++){
+                let box= this.boxes.create(platform.x+ i*60, platform.y-h*0.20, 'box');
+                let randDestroy= Math.random()
+                if(randDestroy < 0.5){
+                    box.name="Destroyable"
+                }else{
+                    box.name="Undestroyable"
+                }
+            }
+
+        }
+    }
+
+    createBoxRings(player, box){
+        let ring= this.boxRings.get();
+        if(!ring)return
+        ring.enableBody(true, box.body.center.x, box.body.top, true, true).setScale(0.5)
+        .setVelocity(player.body.velocity.x, -180);
+        const destroyBox= Math.random();
+        if(destroyBox<0.5){
+            box.destroy()
+        }
+    }
+
+    createBoxHeart(player, box){
+        let heart= this.boxHearts.get();
+        if(!heart)return;
+        heart.enableBody(true, box.body.center.x, box.body.top, true, true).setVelocity(player.body.velocity.x, -180);
+        box.destroy();
     }
 
     createEnemies(platform, finalPosition, duration){

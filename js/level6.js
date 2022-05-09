@@ -1,7 +1,7 @@
 
-class Level5 extends Phaser.Scene{
+class Level6 extends Phaser.Scene{
     constructor(){
-        super({key: 'Level5'})
+        super({key: 'Level6'})
     }
 
     preload(){
@@ -17,7 +17,9 @@ class Level5 extends Phaser.Scene{
         this.load.image('ArrowsController', 'assets/controls.png')
         this.load.image('ControlA', 'assets/ControlA.png');
         this.load.image('squareFake', 'assets/squareFakeControl.png');
-        this.load.image('barrel', 'assets/barrel.png')
+        this.load.image('barrel', 'assets/barrel.png');
+        this.load.image('monster', 'assets/monster.png');
+        this.load.image('bullet', 'assets/bullet.png');
     }
 
     create(){
@@ -39,6 +41,7 @@ class Level5 extends Phaser.Scene{
         this.player.setSize(35, 35);
         this.player.setOffset(15, 28);
         this.platforms= this.physics.add.staticGroup();
+        this.monster= this.physics.add.sprite(3400,50,'monster')
         this.rings= this.physics.add.staticGroup();
         this.barrels= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup();
@@ -56,13 +59,13 @@ class Level5 extends Phaser.Scene{
             heart.setScrollFactor(0);
         }
         //create platforms
-        level5Platforms.forEach(platform=>{
+        level6Platforms.forEach(platform=>{
             this.platforms.create(platform.x, platform.y, 'platform');
             this.createRings(platform, 8)
             this.createEnemies(platform, platform.x+100, 2000)
         })
 
-        smallPlatforms5.forEach(platform=>{
+        smallPlatforms6.forEach(platform=>{
             let height = platform.y > 50 ? platform.y : 50
             this.smallPlatforms.create(platform.x, height, 'smallPlatform');
             this.createRings(platform, 3)
@@ -70,7 +73,7 @@ class Level5 extends Phaser.Scene{
         })
 
         //create Movable Platforms
-        movableSmallPlatforms5.forEach(platform=>{
+        movableSmallPlatforms6.forEach(platform=>{
             movablePlatform= this.physics.add.image(platform.x, platform.y, 'smallPlatform');
             movablePlatform.body.setVelocityX(100);
             movablePlatform.body.allowGravity = false;
@@ -78,7 +81,7 @@ class Level5 extends Phaser.Scene{
         })
 
         //create Barrels
-        barrel5.forEach(barrel=>{
+        barrel6.forEach(barrel=>{
             let barr= this.barrels.create(barrel.x, barrel.y, 'barrel');
 
         })
@@ -97,8 +100,13 @@ class Level5 extends Phaser.Scene{
         this.physics.add.collider(this.smallPlatforms, this.player);
         this.physics.add.collider(this.player, movablePlatform);
         this.physics.add.collider(mashrooms4, this.platforms)
+        this.physics.add.collider(this.platformFinish, this.monster, (platform, monster)=>{
+            monster.setVelocityY(-380)
+        })
+        this.physics.add.collider(this.monster, this.player, (monster, player)=>{
+            this.checkGameOver()
+        })
         this.physics.add.collider(this.player, mashrooms4, (pl, mash)=>{
-            console.log(mash.hits)
             if(mash.body.touching.up){
                 if(mash.hits<1){
                     mash.body.stop();
@@ -110,7 +118,6 @@ class Level5 extends Phaser.Scene{
                     mash.destroy();
                 }
             }else{
-                console.log('hit to die')
                 this.checkGameOver()
             }
         })
@@ -134,7 +141,7 @@ class Level5 extends Phaser.Scene{
             gameStats.score++;
             gameStats.score+=100;
             this.scene.stop();
-            this.scene.start('Level6')
+            this.scene.start('EndGame')
             this.cameras.main.fade(1000);
         })
         this.ringsOverlap= this.physics.add.overlap(this.player, this.rings, (player, ring)=>{
@@ -142,8 +149,10 @@ class Level5 extends Phaser.Scene{
             ring.destroy();
         })
 
+        //throw bullets
+        this.createBullets()
+
         //Texts
-        console.log(gameStats.score)
         this.scoreText= this.add.text(20,40, `Score: ${gameStats.score}`, {fontSize: 20});
         this.scoreText.setScrollFactor(0)
         
@@ -170,9 +179,9 @@ class Level5 extends Phaser.Scene{
             this.checkGameOver()
         }
 
-        if(movablePlatform.x< 2200){
+        if(movablePlatform.x< 851){
             movablePlatform.body.setVelocityX(100)
-        }else if(movablePlatform.x>2680){
+        }else if(movablePlatform.x>1200){
             movablePlatform.body.setVelocityX(-100)
         }
 
@@ -215,6 +224,7 @@ class Level5 extends Phaser.Scene{
         })
         squareDown.on('pointerout', ()=>{
             squareDown.setAlpha(0.01)
+
         })
         squareDown.on('pointerup', ()=>{
             squareDown.setAlpha(0.01)
@@ -285,57 +295,83 @@ class Level5 extends Phaser.Scene{
             this.physics.add.collider(mashroom, this.smallPlatforms)
         }
     }
+
+    createBullets(){
+        setInterval(()=>{
+            let bullet= this.physics.add.image(this.monster.x, this.monster.body.top+(Math.random()*100), 'bullet')
+            bullet.setVelocityX(-200)
+            bullet.body.allowGravity=false
+            this.physics.add.collider(bullet, this.player, (bul, player)=>{
+                this.checkGameOver()
+            })
+        },5000)
+    }
 }
 
-const level5Platforms= [
+const level6Platforms= [
     {
         x: 500,
+        y: h*0.4
+    },
+]
+
+const smallPlatforms6 = [
+    {
+        x: 800,
         y: h*0.3
     },
     {
-        x:900,
+        x: 2050,
         y: h*0.6
     },
     {
-        x:1900,
-        y: h*0.83
-    },
-]
-
-const smallPlatforms5 = [
-    {
-        x: 1200,
-        y: h*0.45
+        x: 2600,
+        y: h*0.28
     },
     {
-        x: 1400,
-        y:h*0.9
-    },
-]
-
-const movableSmallPlatforms5 = [
-    {
-        id: 0,
-        x: 2100,
-        y: h*0.7
+        x: 2900,
+        y: h*0.9
     }
 ]
 
-const barrel5= [
+const movableSmallPlatforms6 = [
     {
         id: 0,
-        x: 1620,
-        y: h*0.6
+        x: 850,
+        y: h*0.3
+    }
+]
+
+const barrel6= [
+    {
+        id: 0,
+        x: 1250,
+        y: h*0.3
     },
     {
         id: 1,
-        x: 2700,
-        y: h*0.65
+        x: 1450,
+        y: h*0.3
     },
     {
         id: 2,
-        x:3000,
-        y: h*0.65
+        x:1650,
+        y: h*0.3
+    },
+    {
+        id: 3,
+        x: 1850,
+        y:h*0.3
+    },
+    {
+        id:4,
+        x: 2300,
+        y:h*0.5
+    },
+    {
+        id: 5,
+        x:3200,
+        y: h*0.75
     }
 ]
 
