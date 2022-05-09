@@ -156,6 +156,16 @@ class GameScene extends Phaser.Scene{
             squareRight.setAlpha(0.01)
             animation='idle'
         })
+        squareDown.on('pointerdown', ()=>{
+            this.player.setVelocityY(h*0.63)
+            squareDown.setAlpha(0.03)
+        })
+        squareDown.on('pointerout', ()=>{
+            squareDown.setAlpha(0.01)
+        })
+        squareDown.on('pointerup', ()=>{
+            squareDown.setAlpha(0.01)
+        })
         controlA.on('pointerdown', ()=>{
             if(this.player.body.touching.down){
                 this.player.setVelocityY(-380)

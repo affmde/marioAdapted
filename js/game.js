@@ -14,7 +14,7 @@ config={
         gravity: { y: 300 }
       }
     },
-    scene: [StartScene, GameScene, Level2, Level3, Level4, GameOver, EndGame]
+    scene: [StartScene, GameScene, Level2, Level3, Level4, Level5, GameOver, EndGame]
 }
 
 const game = new Phaser.Game(config);

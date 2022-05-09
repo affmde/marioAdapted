@@ -1,6 +1,7 @@
-class Level3 extends Phaser.Scene{
+
+class Level5 extends Phaser.Scene{
     constructor(){
-        super({key: 'Level3'})
+        super({key: 'Level5'})
     }
 
     preload(){
@@ -11,80 +12,79 @@ class Level3 extends Phaser.Scene{
         this.load.image('smallPlatform', 'assets/platform-small.png');
         this.load.image('heart', 'assets/red-heart.png');
         this.load.image('ring', 'assets/ring.png');
-        this.load.image('box', 'assets/box.png');
+        this.load.atlas('mashroom', 'assets/mashroom.png', 'assets/mashroom_atlas.json')
+        this.load.animation('mashroom_anim', 'assets/mashroom_anim.json');
         this.load.image('ArrowsController', 'assets/controls.png')
         this.load.image('ControlA', 'assets/ControlA.png');
-        this.load.image('squareFake', 'assets/squareFakeControl.png')
+        this.load.image('squareFake', 'assets/squareFakeControl.png');
+        this.load.image('barrel', 'assets/barrel.png')
     }
 
     create(){
-        this.background= this.add.rectangle(0,0, 2500,h, 0x000000);
+        this.background= this.add.rectangle(0,0, 3500,h, 0xb9baff);
         this.background.setOrigin(0)
-        this.physics.world.setBounds(0,0,2500, h)
+        this.physics.world.setBounds(0,0,3500, h)
         this.cursors= this.input.keyboard.createCursorKeys();
         this.platformStart = this.physics.add.image(0, h*0.67, 'platform').setOrigin(0);
         this.platformStart.body.allowGravity = false;
         this.platformStart.setImmovable(true);
-        this.platformFinish = this.physics.add.image(2500,h*0.67, 'platform').setOrigin(1,0);
+        this.platformFinish = this.physics.add.image(3500,h*0.67, 'platform').setOrigin(1,0);
         this.platformFinish.body.allowGravity = false;
         this.platformFinish.setImmovable(true);
-        this.door=this.physics.add.image(2500, h*0.67, 'door').setOrigin(1);
+        this.door=this.physics.add.image(3500, h*0.67, 'door').setOrigin(1);
         this.door.setImmovable(true);
         this.door.body.allowGravity = false;
-        this.player= this.physics.add.sprite(20,h*0.25,'golem');
+        this.player= this.physics.add.sprite(20,h*0.2,'golem');
         this.player.setCollideWorldBounds(true);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
+        this.barrels= this.physics.add.staticGroup();
+        this.smallPlatforms= this.physics.add.staticGroup();
+        mashrooms4= this.physics.add.group();
         arrows = this.add.image(120, h*0.8, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
         controlA = this.add.image(w*0.81,h*0.8, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
         squareLeft = this.add.image(50, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         squareRight = this.add.image(190, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         squareUp = this.add.image(120, h*0.8-70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         squareDown = this.add.image(120, h*0.8+70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        this.smallPlatforms= this.physics.add.staticGroup();
-        this.boxRings= this.physics.add.group(({
-            key: 'ring',
-            frameQuantity: 12,
-            maxSize: 1000,
-            active: false,
-            visible: false,
-            enable: false,
-            bounceX: 0.5,
-            bounceY: 0.5,
-            dragX: 30,
-            dragY: 0
-        }));
-        this.boxHearts= this.physics.add.group(({
-            key: 'heart',
-            frameQuantity: 12,
-            maxSize: 1000,
-            active: false,
-            visible: false,
-            enable: false,
-            bounceX: 0.5,
-            bounceY: 0.5,
-            dragX: 30,
-            dragY: 0
-        }));
-        this.boxes= this.physics.add.staticGroup();
-
-
+        
+        //Create Live Hearts
+        for(let i = 0; i < gameStats.lives; i++){
+            const heart = this.add.image(20 + i*30, 20, 'heart')
+            heart.setScrollFactor(0);
+        }
         //create platforms
-        levelPlatforms.forEach(platform=>{
+        level5Platforms.forEach(platform=>{
             this.platforms.create(platform.x, platform.y, 'platform');
             this.createRings(platform, 8)
-            this.createBox(platform)
+            this.createEnemies(platform, platform.x+100, 2000)
         })
 
-        smallPlatforms.forEach(platform=>{
-            this.smallPlatforms.create(platform.x, platform.y, 'smallPlatform');
+        smallPlatforms5.forEach(platform=>{
+            let height = platform.y > 50 ? platform.y : 50
+            this.smallPlatforms.create(platform.x, height, 'smallPlatform');
             this.createRings(platform, 3)
+            this.createEnemies(platform, platform.x+10, 500)
+        })
+
+        //create Movable Platforms
+        movableSmallPlatforms5.forEach(platform=>{
+            movablePlatform= this.physics.add.image(platform.x, platform.y, 'smallPlatform');
+            movablePlatform.body.setVelocityX(100);
+            movablePlatform.body.allowGravity = false;
+            movablePlatform.setImmovable(true);
+        })
+
+        //create Barrels
+        barrel5.forEach(barrel=>{
+            let barr= this.barrels.create(barrel.x, barrel.y, 'barrel');
+
         })
 
 
         //cameras
         this.cameras.main.startFollow(this.player)
-        this.cameras.main.setBounds(0,0, 2500, h);
+        this.cameras.main.setBounds(0,0, 3500, h);
         //this.cameras.main.fade(100, 255, 255, 255, false, null, this);
         this.cameras.main.fadeIn(1000);
         //Colliders
@@ -93,49 +93,58 @@ class Level3 extends Phaser.Scene{
         this.physics.add.collider(this.door, this.platforms)
         this.physics.add.collider(this.platforms, this.player)
         this.physics.add.collider(this.smallPlatforms, this.player);
-        this.physics.add.collider(this.player, this.boxes, (player, box)=>{
-            if(box.body.touching.down && player.body.touching.up){
-                const rand= Math.random();
-                if(box.name==="Destroyable"){
-                    if(rand>0.7){
-                        this.createBoxHeart(player, box)
-                    }
-                    else if(rand<0.5){
-                        this.createBoxRings(player, box)
-                    }else{
-                        return
-                    }
+        this.physics.add.collider(this.player, movablePlatform);
+        this.physics.add.collider(mashrooms4, this.platforms)
+        this.physics.add.collider(this.player, mashrooms4, (pl, mash)=>{
+            console.log(mash.hits)
+            if(mash.body.touching.up){
+                if(mash.hits<1){
+                    mash.body.stop();
+                    mash.allowGravity = false;
+                    mash.hits++
+                    this.player.setVelocityY(-100)
                 }else{
-                    return
+                    gameStats.score+=20;
+                    mash.destroy();
                 }
+            }else{
+                console.log('hit to die')
+                this.checkGameOver()
             }
         })
-        this.physics.add.collider(this.platforms, this.boxRings);
-        this.physics.add.collider(this.boxes, this.boxRings)
+        this.physics.add.collider(this.player, this.barrels, (player, barrel)=>{
+            let rotate=false
+            setInterval(()=>{
+                if(rotate){
+                    barrel.setScale(0.9)
+                }else{
+                    barrel.setScale(1)
+                }
+                rotate=!rotate
+                console.log(rotate)
+            },16)
+            setTimeout(()=>{
+                barrel.destroy()
+            },1500)
+        })
         //Overlap
         this.physics.add.overlap(this.player, this.door, ()=>{
             gameStats.score++;
             gameStats.score+=100;
             this.scene.stop();
-            this.scene.start('Level4')
+            this.scene.start('EndGame')
             this.cameras.main.fade(1000);
         })
         this.ringsOverlap= this.physics.add.overlap(this.player, this.rings, (player, ring)=>{
             gameStats.score +=10
             ring.destroy();
         })
-        this.boxRingsOverlap= this.physics.add.overlap(this.player, this.boxRings, (player, ring)=>{
-            gameStats.score +=10
-            ring.destroy();
-        })
-        this.boxHeartsOverlap= this.physics.add.overlap(this.player, this.boxHearts, (player, heart)=>{
-            gameStats.lives++
-            heart.destroy();
-        })
 
         //Texts
+        console.log(gameStats.score)
         this.scoreText= this.add.text(20,40, `Score: ${gameStats.score}`, {fontSize: 20});
         this.scoreText.setScrollFactor(0)
+        
     }
 
     update(){
@@ -159,12 +168,18 @@ class Level3 extends Phaser.Scene{
             this.checkGameOver()
         }
 
-       //Mobile Controls
-       squareLeft.on('pointerdown', ()=>{
-        this.player.setVelocityX(-160)
-        squareLeft.setAlpha(0.03)
-        this.player.flipX=true;
-        animation='walk'
+        if(movablePlatform.x< 2200){
+            movablePlatform.body.setVelocityX(100)
+        }else if(movablePlatform.x>2680){
+            movablePlatform.body.setVelocityX(-100)
+        }
+
+        //Mobile Controls
+        squareLeft.on('pointerdown', ()=>{
+            this.player.setVelocityX(-160)
+            squareLeft.setAlpha(0.03)
+            this.player.flipX=true;
+            animation='walk'
         })
         squareLeft.on('pointerup', ()=>{
             this.player.setVelocityX(0);
@@ -204,7 +219,7 @@ class Level3 extends Phaser.Scene{
         })
         controlA.on('pointerdown', ()=>{
             if(this.player.body.touching.down){
-                this.player.setVelocityY(-380)
+                this.player.setVelocityY(-h*0.63)
             }
             controlA.setScale(0.6)
         })
@@ -217,10 +232,6 @@ class Level3 extends Phaser.Scene{
 
         //Update texts
         this.scoreText.setText(`Your score: ${gameStats.score}`)
-
-        //Update player lives
-        this.playerLives();
-
     }//end of Update method
 
     checkGameOver(){
@@ -253,76 +264,76 @@ class Level3 extends Phaser.Scene{
         }
     }
 
-    createBox(platform){
-        const rand= Math.random();
-        if(rand < 0.5){
-            const numOfBoxes = Math.floor(Math.random()*5);
-            for(let i= 0; i<numOfBoxes; i++){
-                let box= this.boxes.create(platform.x+ i*60, platform.y-h*0.20, 'box');
-                let randDestroy= Math.random()
-                if(randDestroy < 0.5){
-                    box.name="Destroyable"
-                }else{
-                    box.name="Undestroyable"
-                }
-            }
-
-        }
-    }
-
-    createBoxRings(player, box){
-        let ring= this.boxRings.get();
-        if(!ring)return
-        ring.enableBody(true, box.body.center.x, box.body.top, true, true).setScale(0.5)
-        .setVelocity(player.body.velocity.x, -180);
-        const destroyBox= Math.random();
-        if(destroyBox<0.5){
-            box.destroy()
-        }
-    }
-
-    createBoxHeart(player, box){
-        let heart= this.boxHearts.get();
-        if(!heart)return;
-        heart.enableBody(true, box.body.center.x, box.body.top, true, true).setVelocity(player.body.velocity.x, -180);
-        box.destroy();
-    }
-
-    playerLives(){
-        for(let i = 0; i < gameStats.lives; i++){
-            const heart = this.add.image(20 + i*30, 20, 'heart')
-            heart.setScrollFactor(0)
+    createEnemies(platform, finalPosition, duration){
+        const rand= Math.random()
+        if(rand <0.5){
+            let mashroomHit = 0;
+            let mashroom= this.physics.add.sprite(platform.x, platform.y, 'mashroom');
+            mashrooms4.add(mashroom)
+            mashroom.setOrigin(0,2);
+            mashroom.hits=0;
+            this.tweens.add({
+                targets:mashroom,
+                x: finalPosition,
+                ease: 'Linear',
+                duration:duration ,
+                repeat: -1,
+                yoyo: true,
+            })
+            this.physics.add.collider(mashroom, this.smallPlatforms)
         }
     }
 }
 
-const levelPlatforms= [
+const level5Platforms= [
     {
         x: 500,
-        y: 300+Math.random(200)
+        y: h*0.3
     },
-    
+    {
+        x:900,
+        y: h*0.6
+    },
     {
         x:1900,
-        y: 300+ Math.random()*200
+        y: h*0.83
     },
 ]
 
-const smallPlatforms = [
+const smallPlatforms5 = [
     {
-        x: 850,
-        y: 300
-    },
-    {
-        x:1100,
-        y: 200
+        x: 1200,
+        y: h*0.45
     },
     {
         x: 1400,
-        y:500
+        y:h*0.9
     },
+]
+
+const movableSmallPlatforms5 = [
     {
-        x: 1620,
-        y: 300
+        id: 0,
+        x: 2100,
+        y: h*0.7
     }
 ]
+
+const barrel5= [
+    {
+        id: 0,
+        x: 1620,
+        y: h*0.6
+    },
+    {
+        id: 1,
+        x: 2700,
+        y: h*0.65
+    },
+    {
+        id: 2,
+        x:3000,
+        y: h*0.65
+    }
+]
+
