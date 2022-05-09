@@ -21,20 +21,20 @@ class Level2 extends Phaser.Scene{
     }
 
     create(){
-        this.background= this.add.rectangle(0,0, 2500,600, 0xa9a9a9);
+        this.background= this.add.rectangle(0,0, 2500,h, 0xa9a9a9);
         this.background.setOrigin(0)
-        this.physics.world.setBounds(0,0,2500, 600)
+        this.physics.world.setBounds(0,0,2500, h)
         this.cursors= this.input.keyboard.createCursorKeys();
-        this.platformStart = this.physics.add.image(0, 400, 'platform').setOrigin(0);
+        this.platformStart = this.physics.add.image(0, h*0.67, 'platform').setOrigin(0);
         this.platformStart.body.allowGravity = false;
         this.platformStart.setImmovable(true);
-        this.platformFinish = this.physics.add.image(2500,400, 'platform').setOrigin(1,0);
+        this.platformFinish = this.physics.add.image(2500,h*0.67, 'platform').setOrigin(1,0);
         this.platformFinish.body.allowGravity = false;
         this.platformFinish.setImmovable(true);
-        this.door=this.physics.add.image(2500, 400, 'door').setOrigin(1);
+        this.door=this.physics.add.image(2500, h*0.67, 'door').setOrigin(1);
         this.door.setImmovable(true);
         this.door.body.allowGravity = false;
-        this.player= this.physics.add.sprite(20,300,'golem');
+        this.player= this.physics.add.sprite(20,h*0.2,'golem');
         this.player.setCollideWorldBounds(true);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
@@ -64,12 +64,12 @@ class Level2 extends Phaser.Scene{
         }));
         this.boxes= this.physics.add.staticGroup();
         mashrooms = this.physics.add.group();
-        arrows = this.add.image(120, 480, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
-        controlA = this.add.image(650,480, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
-        squareLeft = this.add.image(50, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareRight = this.add.image(190, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareUp = this.add.image(120, 410, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareDown = this.add.image(120, 550, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        arrows = this.add.image(120, h*0.8, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
+        controlA = this.add.image(w*0.81,h*0.8, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
+        squareLeft = this.add.image(50, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareRight = this.add.image(190, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareUp = this.add.image(120, h*0.8-70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareDown = this.add.image(120, h*0.8+70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         
         //create platforms
         level2Platforms.forEach(platform=>{
@@ -78,7 +78,7 @@ class Level2 extends Phaser.Scene{
             const randNrRings= Math.random()*5;
             if(rand<0.5){
                 for(let i= 0; i<randNrRings; i++){
-                    let ring= this.rings.create(platform.x-100+i*40, platform.y-150-Math.random()*100, 'ring')
+                    let ring= this.rings.create(platform.x-100+i*40, platform.y-(h*0.16)-Math.random()*(h*0.16), 'ring')
                     ring.setScale(0.5)
                 }
             }
@@ -88,7 +88,7 @@ class Level2 extends Phaser.Scene{
         //create enemy
         enemies.forEach(enemy=>{
             let mashroomHit = 0;
-            let mashroom= mashrooms.create(enemy.x-100, enemy.y-100, 'mashroom');
+            let mashroom= mashrooms.create(enemy.x-100, enemy.y-h*0.16, 'mashroom');
             mashroom.setOrigin(0,2);
             mashroom.name=enemy.id;
             mashroom.hits=0;
@@ -105,7 +105,7 @@ class Level2 extends Phaser.Scene{
 
         //cameras
         this.cameras.main.startFollow(this.player)
-        this.cameras.main.setBounds(0,0, 2500, 600);
+        this.cameras.main.setBounds(0,0, 2500, h);
         //this.cameras.main.fade(100, 255, 255, 255, false, null, this);
         this.cameras.main.fadeIn(1000);
         //Colliders
@@ -196,11 +196,11 @@ class Level2 extends Phaser.Scene{
             this.player.setVelocityY(-380)
         }else if(this.cursors.down.isDown){
             this.player.setVelocityY(200)
-        }
-
-        if(this.player.y===568){
-            this.checkGameOver()
         }*/
+
+        if(this.player.y>h-50){
+            this.checkGameOver()
+        }
 
          //Mobile Controls
          squareLeft.on('pointerdown', ()=>{
@@ -261,7 +261,7 @@ class Level2 extends Phaser.Scene{
         if(rand < 0.5){
             const numOfBoxes = Math.floor(Math.random()*5);
             for(let i= 0; i<numOfBoxes; i++){
-                let box= this.boxes.create(platform.x+ i*60, platform.y-200, 'box');
+                let box= this.boxes.create(platform.x+ i*60, platform.y-h*0.20, 'box');
                 let randDestroy= Math.random()
                 if(randDestroy < 0.5){
                     box.name="Destroyable"
@@ -303,19 +303,19 @@ class Level2 extends Phaser.Scene{
 const level2Platforms= [
     {
         x: 500,
-        y: 300
+        y: h/2
     },
     {
         x:850,
-        y: 300+ Math.random()*200
+        y: h/2-100
     },
     {
         x:1300,
-        y: 300+ Math.random()*200
+        y: h/2+h*0.1
     },
     {
-        x:1900,
-        y: 300+ Math.random()*200
+        x:1800,
+        y: h/2
     },
 ]
 

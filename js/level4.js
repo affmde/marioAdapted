@@ -21,31 +21,31 @@ class Level4 extends Phaser.Scene{
     }
 
     create(){
-        this.background= this.add.rectangle(0,0, 3500,600, 0x000000);
+        this.background= this.add.rectangle(0,0, 3500,h, 0x000000);
         this.background.setOrigin(0)
-        this.physics.world.setBounds(0,0,3500, 600)
+        this.physics.world.setBounds(0,0,3500, h)
         this.cursors= this.input.keyboard.createCursorKeys();
-        this.platformStart = this.physics.add.image(0, 400, 'platform').setOrigin(0);
+        this.platformStart = this.physics.add.image(0, h*0.67, 'platform').setOrigin(0);
         this.platformStart.body.allowGravity = false;
         this.platformStart.setImmovable(true);
-        this.platformFinish = this.physics.add.image(3500,400, 'platform').setOrigin(1,0);
+        this.platformFinish = this.physics.add.image(3500,h*0.67, 'platform').setOrigin(1,0);
         this.platformFinish.body.allowGravity = false;
         this.platformFinish.setImmovable(true);
-        this.door=this.physics.add.image(3500, 400, 'door').setOrigin(1);
+        this.door=this.physics.add.image(3500, h*0.67, 'door').setOrigin(1);
         this.door.setImmovable(true);
         this.door.body.allowGravity = false;
-        this.player= this.physics.add.sprite(20,300,'golem');
+        this.player= this.physics.add.sprite(20,h*0.2,'golem');
         this.player.setCollideWorldBounds(true);
         this.platforms= this.physics.add.staticGroup();
         this.rings= this.physics.add.staticGroup();
         this.smallPlatforms= this.physics.add.staticGroup();
         mashrooms4= this.physics.add.group();
-        arrows = this.add.image(120, 480, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
-        controlA = this.add.image(650,480, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
-        squareLeft = this.add.image(50, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareRight = this.add.image(190, 480, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareUp = this.add.image(120, 410, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
-        squareDown = this.add.image(120, 550, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        arrows = this.add.image(120, h*0.8, 'ArrowsController').setAlpha(0.7).setScrollFactor(0).setInteractive().setScale(1.5);
+        controlA = this.add.image(w*0.81,h*0.8, 'ControlA').setAlpha(0.5).setScale(0.8).setScrollFactor(0).setInteractive();
+        squareLeft = this.add.image(50, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareRight = this.add.image(190, h*0.8, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareUp = this.add.image(120, h*0.8-70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
+        squareDown = this.add.image(120, h*0.8+70, 'squareFake').setScale(1).setInteractive().setScrollFactor(0).setAlpha(0.01);
         
         //Create Live Hearts
         for(let i = 0; i < gameStats.lives; i++){
@@ -77,7 +77,7 @@ class Level4 extends Phaser.Scene{
 
         //cameras
         this.cameras.main.startFollow(this.player)
-        this.cameras.main.setBounds(0,0, 3500, 600);
+        this.cameras.main.setBounds(0,0, 3500, h);
         //this.cameras.main.fade(100, 255, 255, 255, false, null, this);
         this.cameras.main.fadeIn(1000);
         //Colliders
@@ -123,6 +123,7 @@ class Level4 extends Phaser.Scene{
         console.log(gameStats.score)
         this.scoreText= this.add.text(20,40, `Score: ${gameStats.score}`, {fontSize: 20});
         this.scoreText.setScrollFactor(0)
+        
     }
 
     update(){
@@ -142,7 +143,7 @@ class Level4 extends Phaser.Scene{
             this.player.setVelocityY(200)
         }*/
 
-        if(this.player.y===568){
+        if(this.player.y>h-50){
             this.checkGameOver()
         }
 
@@ -178,8 +179,9 @@ class Level4 extends Phaser.Scene{
             squareRight.setAlpha(0.01)
         })
         controlA.on('pointerdown', ()=>{
-            if(this.player.body.touching.down)
-            this.player.setVelocityY(-380)
+            if(this.player.body.touching.down){
+                this.player.setVelocityY(-h*0.63)
+            }
             controlA.setScale(0.6)
         })
         controlA.on('pointerup', ()=>{
@@ -209,7 +211,7 @@ class Level4 extends Phaser.Scene{
         const randNrRings= Math.random()*amount;
         if(rand<0.5){
             for(let i= 0; i<randNrRings; i++){
-                let ring= this.rings.create(platform.x-100+i*40, platform.y-150-Math.random()*100, 'ring')
+                let ring= this.rings.create(platform.x-100+i*40, platform.y-(h*0.16)-Math.random()*(h*0.16), 'ring')
                 ring.setScale(0.5)
             }
         }
@@ -239,16 +241,16 @@ class Level4 extends Phaser.Scene{
 const level4Platforms= [
     {
         x: 500,
-        y: 300+Math.random(200)
+        y: h*0.3
     },
     
     {
         x:1900,
-        y: 300+ Math.random()*200
+        y: h*0.83
     },
     {
         x:3000,
-        y: (Math.random()*300)+(Math.random()*200)
+        y: h*0.65
 
     }
 ]
@@ -256,19 +258,19 @@ const level4Platforms= [
 const smallPlatforms4 = [
     {
         x: 850,
-        y: 300
+        y: h/2
     },
     {
         x:1100,
-        y: 150
+        y: h*0.25
     },
     {
         x: 1400,
-        y:520
+        y:h*0.86
     },
     {
         x: 1620,
-        y: 300
+        y: h/2
     }
 ]
 
@@ -276,7 +278,7 @@ const movableSmallPlatforms = [
     {
         id: 0,
         x: 2100,
-        y: 250
+        y: h*0.41
     }
 ]
 
