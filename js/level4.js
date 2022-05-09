@@ -278,7 +278,7 @@ const movableSmallPlatforms = [
     {
         id: 0,
         x: 2100,
-        y: h*0.41
+        y: h*0.7
     }
 ]
 
